@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-BC.Game Hilo Provably Fair Audit & Simulation Tool — v1.3
+BC.Game Hilo Provably Fair Audit & Simulation Tool — v1.4
 ==========================================================
 Replicates BC.Game's Hilo provably fair card generation system.
 Supports session verification, simulation, batch auditing, and
 in-app reference for game rules + script usage.
+
+v1.4: Input validation in simulate mode:
+    - Rejects non hi/lo/skip entries with a clear error message.
+    - Rejects impossible bets (LO on Ace, HI on King) with an
+      explanation before the user commits the guess.
 
 v1.3: Corrected HMAC message format to match BC.Game's official spec:
     hash = HMAC_SHA256(clientSeed:nonce:round, serverSeed)
@@ -156,7 +161,7 @@ BANNER = r"""
 
 def print_banner():
     print(clr(BANNER, C.CYAN, C.BOLD))
-    print(clr("  BC.Game Hilo — Provably Fair Audit & Simulation Tool  v1.3", C.GRAY))
+    print(clr("  BC.Game Hilo — Provably Fair Audit & Simulation Tool  v1.4", C.GRAY))
     print(clr("  House Edge: 2.00%  |  RTP: 98%  |  Ranks: A–K (13)", C.GRAY))
     print()
 
@@ -303,9 +308,16 @@ def mode_simulate():
             print_card_row(nonce, r, rank, suit, rank_idx, payouts)
             while True:
                 guess = prompt("  Your guess for next card (hi/lo/skip)", default="skip")
-                if guess.lower() in ('hi', 'lo', 'skip'):
-                    break
-                print(clr("  ✗ Invalid input. Please enter hi, lo, or skip.", C.RED))
+                if guess.lower() not in ('hi', 'lo', 'skip'):
+                    print(clr("  ✗ Invalid input. Please enter hi, lo, or skip.", C.RED))
+                    continue
+                if guess.lower() == 'hi' and payouts['hi_payout'] == 0.0:
+                    print(clr(f"  ✗ HI is impossible on a {rank_full(rank)} (nothing higher). Choose lo or skip.", C.RED))
+                    continue
+                if guess.lower() == 'lo' and payouts['lo_payout'] == 0.0:
+                    print(clr(f"  ✗ LO is impossible on a {rank_full(rank)} (nothing lower). Choose hi or skip.", C.RED))
+                    continue
+                break
             if guess.lower() == 'skip':
                 guess = None
 
