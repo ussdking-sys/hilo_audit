@@ -1,13 +1,27 @@
 # hilo-audit
 
-**Version 1.3** — A provably fair audit and simulation tool for the **Hilo** card prediction game on [BC.Game](https://bc.game).
+**Version 1.4** — A provably fair audit and simulation tool for the **Hilo** card prediction game on [BC.Game](https://bc.game).
 
 Replicates BC.Game's HMAC-SHA256 seed derivation algorithm locally, allowing you to reconstruct past sessions, verify card outcomes, and run simulations — all from your terminal with zero external dependencies.
 
 ---
 
-## What's New in v1.3
+## Changelog
 
+### v1.4
+**Simulate mode input validation** — the guess prompt is now fully guarded against bad input.
+
+- **Invalid input rejected** — entering anything other than `hi`, `lo`, or `skip` now shows an error and re-prompts instead of silently recording a loss.
+- **Impossible bets blocked** — betting `lo` on an Ace (nothing lower, 0× payout) or `hi` on a King (nothing higher, 0× payout) is rejected with a clear explanation before the guess is committed:
+  ```
+  ✗ LO is impossible on a Ace (nothing lower). Choose hi or skip.
+  ✗ HI is impossible on a King (nothing higher). Choose lo or skip.
+  ```
+  Previously both were silently accepted and counted as losses with no warning to the user.
+
+---
+
+### v1.3
 **Algorithm correction** — verified against BC.Game's official Help Center spec.
 
 Previous versions used `HMAC_SHA256(serverSeed, "clientSeed:nonce")`. The correct formula is:
@@ -18,7 +32,7 @@ hash = HMAC_SHA256(clientSeed:nonce:round, serverSeed)
 
 The added **`round`** parameter is the card index *within* a single Hilo bet (0, 1, 2, ...). One bet draws many cards before cash-out or loss, all using the same nonce — round increments per card, nonce increments per new bet.
 
-**Other v1.3 changes:**
+Other changes:
 - All four modes (verify, simulate, single, batch) now use nonce + round correctly
 - Batch verify CSV/JSON schema adds a `round` field
 - CSV exports include a `round` column
@@ -27,8 +41,7 @@ The added **`round`** parameter is the card index *within* a single Hilo bet (0,
 
 ---
 
-## What's in v1.2
-
+### v1.2
 - **In-app Game Rules** — menu option `[5]` explains the rules of Hilo
 - **In-app Usage Guide** — menu option `[6]` walks you through every mode
 
@@ -180,7 +193,7 @@ Built-in walkthrough of every mode with examples and Termux tips (piping to `les
 
 ```
 hilo-audit/
-├── hilo_audit.py     # Main tool — all logic in a single file
+├── hilo_audit.py
 ├── README.md
 ├── LICENSE
 └── .gitignore
