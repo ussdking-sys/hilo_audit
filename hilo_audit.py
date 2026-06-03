@@ -301,7 +301,11 @@ def mode_simulate():
         guess = None
         if not auto_guess:
             print_card_row(nonce, r, rank, suit, rank_idx, payouts)
-            guess = prompt(f"  Your guess for next card (hi/lo/skip)", default="skip")
+            while True:
+                guess = prompt("  Your guess for next card (hi/lo/skip)", default="skip")
+                if guess.lower() in ('hi', 'lo', 'skip'):
+                    break
+                print(clr("  ✗ Invalid input. Please enter hi, lo, or skip.", C.RED))
             if guess.lower() == 'skip':
                 guess = None
 
