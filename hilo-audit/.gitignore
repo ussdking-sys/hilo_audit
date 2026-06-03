@@ -1,0 +1,53 @@
+# ── Python ────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# ── Virtual environments ───────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ── Distribution / packaging ───────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# ── Pytest / coverage ─────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+coverage.xml
+
+# ── Tool output files ─────────────────────────────
+*.csv
+*.log
+
+# Keep example batch files if added intentionally
+!examples/*.csv
+!examples/*.json
+
+# ── OS cruft ──────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Secrets / local config ────────────────────────
+.env
+*.local
+secrets.txt
+seeds.txt
